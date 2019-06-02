@@ -56,6 +56,16 @@ Spring process run with pid [ 11047 ]
 +----------+--------+-----------------------+
 ```
 
+##### b. Command list
+
+| command | parameters | expected | example |
+|-------------|------------|---------|--------|
+|start| profile - spring profile, warFile - gradle bootWar file | Run war file with given profile. | spm start dev test.war |
+|stop| profile - spring profile | Stop spring boot process with given profile | spm stop dev |
+|restart| In progress | In progress | In progress |
+|list| none | Show up all managed processes | spm list |
+|logs| profile - spring profile | show out logs with given profile | spm logs dev | 
+
 ## 3. How it works
 
 It uses some static directories to manage process. Make sure that `DATA_PATH`, `LOG_PATH` are accessable to execute user.
