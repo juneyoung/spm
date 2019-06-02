@@ -40,14 +40,14 @@ Execute this command in the directory where the executable war exists
 
 ```
 # 
-$> spm start dev backend-core-0.0.1-SNAPSHOT.war 
+$> spm start dev test-0.0.1-SNAPSHOT.war 
 SPM(Spring Process Manager) v.0.01a writen 1st JUN 2019
 Required config directory : [ /Users/user/etc/spm/config ] exists. Good to go ...
 Required data directory : [ /Users/user/etc/spm/data ] exists. Good to go ...
 Required logs directory : [ /Users/user/etc/spm/logs ] exists. Good to go ...
 Start bootWar and retore data and logs with profile [ dev ]
 start new process with  dev
-Start [ dev ] with file [ backend-core-0.0.1-SNAPSHOT.war ]
+Start [ dev ] with file [ test-0.0.1-SNAPSHOT.war ]
 Spring process run with pid [ 11047 ]
 +----------+--------+-----------------------+
 | profile  | pid    | start_date            |
