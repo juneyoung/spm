@@ -78,7 +78,7 @@ When it `stop`,
 - It will execute `kill` command based on `temp.data` file
 - It will remove corresponding row in the data file
 
-When it `log`,
+When it `logs`,
 - It will exeute `tail` command on `$LOG_DATA/${spring.profiles.active}/out.log`.
 
 How to make a table in bash
