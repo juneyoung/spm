@@ -49,7 +49,7 @@ fi;
 # ===== [S] Define UI Utility functions =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
-# https://stackoverflow.com/questions/12768907/how-to-align-the-columns-of-tables-in-bash
+
 
 function printTable() {
     local -r delimiter="${1}"
