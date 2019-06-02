@@ -72,7 +72,7 @@ When it `log`,
 - It will exeute `tail` command on `$LOG_DATA/${spring.profiles.active}/out.log`.
 
 How to make a table in bash
-- [This stackoverflow codelit](https://stackoverflow.com/questions/12768907/how-to-align-the-columns-of-tables-in-bash) is wonderful example
+- [This stackoverflow codelit](https://stackoverflow.com/questions/12768907/how-to-align-the-columns-of-tables-in-bash) is an wonderful example
 
 ## 4. Known issues
 
