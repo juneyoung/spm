@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Use this in Linux system #!/usr/bin/env bash #!bin/bash
+# Use this in Linux system #!/bin/env bash #!bin/bash
 # @Params $1 command 
 # @Params $2 Spring boot active profile
 # @Params $3 Spring boot war file location includes extension
