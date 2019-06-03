@@ -6,13 +6,13 @@
 # @Params $3 Spring boot war file location includes extension
 
 
-# In case of Linux, Change /Users to /home
+# Linux 의 경우 /Users 를 /home 으로 변경하십시오.
 CONFIG_PATH="/Users/${USER}/etc/spm/config"
 DATA_PATH="/Users/${USER}/etc/spm/data"
 LOG_PATH="/Users/${USER}/etc/spm/logs"
 VERSION="0.01a"
 
-echo "SPM(Spring Process Manager) v.${VERSION} writen 1st JUN 2019";
+echo "SPM(스프링부트 프로세스 매니저) v.${VERSION} 작성일 2019.06.01";
 
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
@@ -21,19 +21,19 @@ echo "SPM(Spring Process Manager) v.${VERSION} writen 1st JUN 2019";
 # ===== ===== ===== ===== ===== ===== ===== =====
 
 if [ -d "$CONFIG_PATH" ]; then
-	echo "Required config directory : [ $CONFIG_PATH ] exists. Good to go ...";
+	echo "필수 설정 디렉토리 OK : [ $CONFIG_PATH ].";
 else
 	mkdir -p "$CONFIG_PATH";
 fi;
 
 if [ -d "$DATA_PATH" ]; then
-	echo "Required data directory : [ $DATA_PATH ] exists. Good to go ...";
+	echo "필수 데이터 디렉토리 OK : [ $DATA_PATH ].";
 else
 	mkdir -p "$DATA_PATH";
 fi;
 
 if [ -d "$LOG_PATH" ]; then
-	echo "Required logs directory : [ $LOG_PATH ] exists. Good to go ...";
+	echo "필수 로그 디렉토리 OK : [ $LOG_PATH ].";
 else
 	mkdir -p "$LOG_PATH";
 fi;
@@ -162,7 +162,7 @@ function resetDataFile {
 function storeProcess {
 
 	if [ ! -d "$DATA_PATH" ]; then
-		echo "Data directory for profile $1 does not found. Make one $DATA_PATH";
+		echo "부트 프로파일 $1 에 대한 데이터 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
 		mkdir -p "$DATA_PATH";
 	fi;
 
@@ -192,46 +192,46 @@ function readPidFromData {
 }
 
 function start {
-	echo "Start bootWar and retore data and logs with profile [ $1 ]"
+	echo "부트 프로파일 [ $1 ] 에 대한 웹서비스를 기동합니다."
 	if [ ! -n "$1" ]; then
-		echo "Need a profile to execute";
+		echo "실행할 프로파일 변수가 전달되지 않았습니다.";
 		exit 1;
 	else
 		if [ ! -n "$2" ]; then
-			echo "Executable war file must provided";
+			echo "실행할 bootWar 파일 경로가 제공되지 않았습니다.";
 			exit 1;
 		fi;
 
 		if [ ! -f "$2" ]; then
-			echo "$2 is not a executable war file";
+			echo "파일 경로 [ $2 ] 가 올바르지 않습니다.";
 			exit 1;
 		fi;
 
 		# Validation for duplicated profile
 		local reqProfile=$( readPidFromData "$1" )
 		if [ -n "$reqProfile" ]; then
-			echo "bootProcess [ $1 ] is already running ... $reqProfile";
+			echo "부트 프로파일 [ $1 ] 이 이미 기동 중입니다. 요청을 무시합니다.";
 			exit 1;
 		else 
-			echo "start new process with $reqProfile $1"
+			echo "부트 프로파일 [ $1 ] 에 대한 준비가 완료되었습니다."
 		fi;
 
-		echo "Start [ $1 ] with file [ $2 ]";
+		echo "부트 웹서비스를 [ $1 ] 프로파일로 실행합니다. 파일경로 : [ $2 ]";
 		# Check log location 
 		if [ ! -d "$LOG_PATH/$1" ]; then
-			echo "Log directory for profile $1 does not found. Make one $LOG_PATH/$1";
+			echo "부트 프로파일 [ $1 ] 에 대한 로그 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
 			mkdir -p "$LOG_PATH/$1"
 		fi; 
 		# echo "Execution command is [ java -Dspring.profiles.active=$1 -jar $2 > $LOG_PATH/$1/out.log & ]";
 		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
 		processId=$( grepPid "$1" );
-		echo "Spring process run with pid [ $processId ]";
+		echo "부트 프로세스가 성공적으로 기동되었습니다. 프로세스 아이디는 [ $processId ] 입니다.";
 		storeProcess "$1" "$processId"
 	fi;
 }
 
 function stop {
-	echo "Stop spring boot process with profile [ $1 ]"
+	echo "부트 프로파일 [ $1 ] 에 대한 서비스를 중지합니다."
 	local processToKill=$( readPidFromData "$1" );
 	kill "$processToKill"
 	# After delete, remove the corresponding line from data file
@@ -246,13 +246,13 @@ function stop {
 		resetDataFile
 		cat "$DATA_PATH/temp.temp" >> "$DATA_PATH/temp.data";
 	else 
-		echo "Failed to stop boot process with profile $1";
+		echo "부트 프로파일 [ $1 ] 에 대한 중지를 실패하였습니다. 프로그램을 종료합니다.";
 		exit 1;
 	fi;
 }	
 
 function list {
-	echo "List up managed spring boot processes from data folder [ $DATA_PATH ]"
+	echo "SPM 데이터 기반으로 관리되는 프로세스를 나열합니다. 데이터 디렉토리 : [ $DATA_PATH ]"
 	if [ ! -f "$DATA_PATH/temp.data" ]; then
 		touch "$DATA_PATH/temp.data";
 		resetDataFile
@@ -278,13 +278,13 @@ function resetData {
 
 
 if [ "$#" -lt 1 ]; then
-	echo "need argument [command] [Spring.profile] for execute ...";
-	echo "command list";
-	echo "  start	[profile] : Start bootWar with given profile";
-	echo "  stop [profile] : Stop bootWar with given profile";
-	echo "  restart [profile] : Retart bootWar with given profile";
-	echo "  logs [profile] : Print out logs with given profile";
-	echo "  list : show managed process list";
+	echo "인수가 부족합니다. 실행하기 위해서 [command] [Spring.profile] 를 추가하십시오.";
+	echo "명령어 목록";
+	echo "  start	[profile] : 전달된 프로파일로 웹서비스를 기동합니다.";
+	echo "  stop [profile] : 전달된 프로파일로 기동 중인 웹서비스를 중지합니다.";
+	echo "  restart [profile] : 전달된 프로파일로 기동 중이 웹서비스를 재시작합니다.(작업중)";
+	echo "  logs [profile] : 전달된 프로파일에 해당하는 웹서비스의 로그를 출력합니다.";
+	echo "  list : 관리하고 있는 프로세스 목록을 출력합니다.";
 	exit 0;
 else
 	case "$1" in
