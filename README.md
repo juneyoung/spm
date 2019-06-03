@@ -5,6 +5,8 @@ For now, it will works in following condition
 - OSX (If want to test in Linux, have to change shebang)
 - Works for gradle fat war (a war file which made with command `gradle bootWar`)
 
+[Korean](https://github.com/juneyoung/spm/blob/master/README_KR.md)
+
 ## 1. Installation
 
 Currently, need to make a symbolic link to use it. Intallation file will be provided in the next mile stone
