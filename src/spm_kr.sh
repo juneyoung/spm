@@ -5,44 +5,40 @@
 # @Params $2 Spring boot active profile
 # @Params $3 Spring boot war file location includes extension
 
+COLOR_NC='\e[0m' # No Color
+COLOR_WHITE='\e[1;37m'
+COLOR_BLACK='\e[0;30m'
+COLOR_BLUE='\e[0;34m'
+COLOR_LIGHT_BLUE='\e[1;34m'
+COLOR_GREEN='\e[0;32m'
+COLOR_LIGHT_GREEN='\e[1;32m'
+COLOR_CYAN='\e[0;36m'
+COLOR_LIGHT_CYAN='\e[1;36m'
+COLOR_RED='\e[0;31m'
+COLOR_LIGHT_RED='\e[1;31m'
+COLOR_PURPLE='\e[0;35m'
+COLOR_LIGHT_PURPLE='\e[1;35m'
+COLOR_BROWN='\e[0;33m'
+COLOR_YELLOW='\e[1;33m'
+COLOR_GRAY='\e[0;30m'
+COLOR_LIGHT_GRAY='\e[0;37m'
 
-# Linux 의 경우 /Users 를 /home 으로 변경하십시오.
+export USE_COLOR=0
+
+# In case of Linux, Change /Users to /home
 CONFIG_PATH="/Users/${USER}/etc/spm/config"
 DATA_PATH="/Users/${USER}/etc/spm/data"
 LOG_PATH="/Users/${USER}/etc/spm/logs"
 VERSION="0.01a"
 
+if [ $( uname ) = 'Linux' ]; then
+	echo '콘솔 색상을 지원합니다.'
+	USE_COLOR=1
+else 
+	echo '콘솔 색상을 지원하지 않습니다.'
+fi;
+
 echo "SPM(스프링부트 프로세스 매니저) v.${VERSION} 작성일 2019.06.01";
-
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [S] Checking required paths
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-
-if [ -d "$CONFIG_PATH" ]; then
-	echo "[ SPM ] 필수 설정 디렉토리 OK : [ $CONFIG_PATH ].";
-else
-	mkdir -p "$CONFIG_PATH";
-fi;
-
-if [ -d "$DATA_PATH" ]; then
-	echo "[ SPM ] 필수 데이터 디렉토리 OK : [ $DATA_PATH ].";
-else
-	mkdir -p "$DATA_PATH";
-fi;
-
-if [ -d "$LOG_PATH" ]; then
-	echo "[ SPM ] 필수 로그 디렉토리 OK : [ $LOG_PATH ].";
-else
-	mkdir -p "$LOG_PATH";
-fi;
-
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [E] Checking required paths
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
 
 
 # ===== ===== ===== ===== ===== ===== ===== =====
@@ -139,6 +135,24 @@ function trimString() {
     sed 's,^[[:blank:]]*,,' <<< "${string}" | sed 's,[[:blank:]]*$,,'
 } 
 
+
+function printConsole {
+	if [ "$USE_COLOR" -eq 1 ]; then
+		echo -e '\e[1;32m' "[ SPM ]" '\e[0m' "$1"
+	else 
+		echo "[ SPM ] $1"
+	fi;
+}
+
+
+function printError {
+	if [ "$USE_COLOR" -eq 1 ]; then
+		echo -e '\e[1;31m' "[ SPM ]" '\e[0m' "$1"
+	else 
+		echo "[ SPM ] $1"
+	fi;
+}
+
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== [E] Define UI Utility functions ===== 
@@ -148,7 +162,7 @@ function trimString() {
 
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [S]  Define UX Functions =====
+# ===== [S]  Define Internal Functions =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 
@@ -162,7 +176,7 @@ function resetDataFile {
 function storeProcess {
 
 	if [ ! -d "$DATA_PATH" ]; then
-		echo "[ SPM ] 부트 프로파일 $1 에 대한 데이터 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
+		printConsole "부트 프로파일 $1 에 대한 데이터 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
 		mkdir -p "$DATA_PATH";
 	fi;
 
@@ -192,46 +206,46 @@ function readPidFromData {
 }
 
 function start {
-	echo "[ SPM ] 부트 프로파일 [ $1 ] 에 대한 웹서비스를 기동합니다."
+	printConsole "부트 프로파일 [ $1 ] 에 대한 웹서비스를 기동합니다."
 	if [ ! -n "$1" ]; then
-		echo "[ SPM ] 실행할 프로파일 변수가 전달되지 않았습니다.";
+		printError "실행할 프로파일 변수가 전달되지 않았습니다.";
 		exit 1;
 	else
 		if [ ! -n "$2" ]; then
-			echo "[ SPM ] 실행할 bootWar 파일 경로가 제공되지 않았습니다.";
+			printError "실행할 bootWar 파일 경로가 제공되지 않았습니다.";
 			exit 1;
 		fi;
 
 		if [ ! -f "$2" ]; then
-			echo "[ SPM ] 파일 경로 [ $2 ] 가 올바르지 않습니다.";
+			printError "파일 경로 [ $2 ] 가 올바르지 않습니다.";
 			exit 1;
 		fi;
 
 		# Validation for duplicated profile
 		local reqProfile=$( readPidFromData "$1" )
 		if [ -n "$reqProfile" ]; then
-			echo "[ SPM ] 부트 프로파일 [ $1 ] 이 이미 기동 중입니다. 요청을 무시합니다.";
+			printConsole "부트 프로파일 [ $1 ] 이 이미 기동 중입니다. 요청을 무시합니다.";
 			exit 1;
 		else 
-			echo "[ SPM ] 부트 프로파일 [ $1 ] 에 대한 준비가 완료되었습니다."
+			printConsole "부트 프로파일 [ $1 ] 에 대한 준비가 완료되었습니다."
 		fi;
 
-		echo "[ SPM ] 부트 웹서비스를 [ $1 ] 프로파일로 실행합니다. 파일경로 : [ $2 ]";
+		printConsole "부트 웹서비스를 [ $1 ] 프로파일로 실행합니다. 파일경로 : [ $2 ]";
 		# Check log location 
 		if [ ! -d "$LOG_PATH/$1" ]; then
-			echo "[ SPM ] 부트 프로파일 [ $1 ] 에 대한 로그 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
+			printConsole "부트 프로파일 [ $1 ] 에 대한 로그 디렉토리가 존재하지 않습니다. 디렉토리를 생성합니다.";
 			mkdir -p "$LOG_PATH/$1"
 		fi; 
 		# echo "Execution command is [ java -Dspring.profiles.active=$1 -jar $2 > $LOG_PATH/$1/out.log & ]";
 		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
 		processId=$( grepPid "$1" );
-		echo "[ SPM ] 부트 프로세스가 성공적으로 기동되었습니다. 프로세스 아이디는 [ $processId ] 입니다.";
+		printConsole "부트 프로세스가 성공적으로 기동되었습니다. 프로세스 아이디는 [ $processId ] 입니다.";
 		storeProcess "$1" "$processId"
 	fi;
 }
 
 function stop {
-	echo "[ SPM ] 부트 프로파일 [ $1 ] 에 대한 서비스를 중지합니다."
+	printConsole "부트 프로파일 [ $1 ] 에 대한 서비스를 중지합니다."
 	local processToKill=$( readPidFromData "$1" );
 	kill "$processToKill"
 	# After delete, remove the corresponding line from data file
@@ -246,13 +260,13 @@ function stop {
 		resetDataFile
 		cat "$DATA_PATH/temp.temp" >> "$DATA_PATH/temp.data";
 	else 
-		echo "[ SPM ] 부트 프로파일 [ $1 ] 에 대한 중지를 실패하였습니다. 프로그램을 종료합니다.";
+		printError "부트 프로파일 [ $1 ] 에 대한 중지를 실패하였습니다. 프로그램을 종료합니다.";
 		exit 1;
 	fi;
 }	
 
 function list {
-	echo "SPM 데이터 기반으로 관리되는 프로세스를 나열합니다. 데이터 디렉토리 : [ $DATA_PATH ]"
+	printConsole "데이터 기반으로 관리되는 프로세스를 나열합니다. 데이터 디렉토리 : [ $DATA_PATH ]"
 	if [ ! -f "$DATA_PATH/temp.data" ]; then
 		touch "$DATA_PATH/temp.data";
 		resetDataFile
@@ -269,9 +283,43 @@ function resetData {
 	resetDataFile
 }
 
+
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [E]  Define UX Functions =====
+# ===== [E]  Define Internal Functions =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+
+
+
+
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== [S] Checking required paths
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+
+if [ -d "$CONFIG_PATH" ]; then
+	printConsole "필수 설정 디렉토리 OK : [ $CONFIG_PATH ].";
+else
+	mkdir -p "$CONFIG_PATH";
+fi;
+
+if [ -d "$DATA_PATH" ]; then
+	printConsole "필수 데이터 디렉토리 OK : [ $DATA_PATH ].";
+else
+	mkdir -p "$DATA_PATH";
+fi;
+
+if [ -d "$LOG_PATH" ]; then
+	printConsole "필수 로그 디렉토리 OK : [ $LOG_PATH ].";
+else
+	mkdir -p "$LOG_PATH";
+fi;
+
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== [E] Checking required paths
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 

@@ -5,6 +5,25 @@
 # @Params $2 Spring boot active profile
 # @Params $3 Spring boot war file location includes extension
 
+COLOR_NC='\e[0m' # No Color
+COLOR_WHITE='\e[1;37m'
+COLOR_BLACK='\e[0;30m'
+COLOR_BLUE='\e[0;34m'
+COLOR_LIGHT_BLUE='\e[1;34m'
+COLOR_GREEN='\e[0;32m'
+COLOR_LIGHT_GREEN='\e[1;32m'
+COLOR_CYAN='\e[0;36m'
+COLOR_LIGHT_CYAN='\e[1;36m'
+COLOR_RED='\e[0;31m'
+COLOR_LIGHT_RED='\e[1;31m'
+COLOR_PURPLE='\e[0;35m'
+COLOR_LIGHT_PURPLE='\e[1;35m'
+COLOR_BROWN='\e[0;33m'
+COLOR_YELLOW='\e[1;33m'
+COLOR_GRAY='\e[0;30m'
+COLOR_LIGHT_GRAY='\e[0;37m'
+
+export USE_COLOR=0
 
 # In case of Linux, Change /Users to /home
 CONFIG_PATH="/Users/${USER}/etc/spm/config"
@@ -12,37 +31,14 @@ DATA_PATH="/Users/${USER}/etc/spm/data"
 LOG_PATH="/Users/${USER}/etc/spm/logs"
 VERSION="0.01a"
 
+if [ $( uname ) = 'Linux' ]; then
+	echo 'Use color console'
+	USE_COLOR=1
+else 
+	echo 'Do not use color console'
+fi;
+
 echo "SPM(Spring Process Manager) v.${VERSION} writen 1st JUN 2019";
-
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [S] Checking required paths
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-
-if [ -d "$CONFIG_PATH" ]; then
-	echo "Required config directory : [ $CONFIG_PATH ] exists. Good to go ...";
-else
-	mkdir -p "$CONFIG_PATH";
-fi;
-
-if [ -d "$DATA_PATH" ]; then
-	echo "Required data directory : [ $DATA_PATH ] exists. Good to go ...";
-else
-	mkdir -p "$DATA_PATH";
-fi;
-
-if [ -d "$LOG_PATH" ]; then
-	echo "Required logs directory : [ $LOG_PATH ] exists. Good to go ...";
-else
-	mkdir -p "$LOG_PATH";
-fi;
-
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [E] Checking required paths
-# ===== ===== ===== ===== ===== ===== ===== =====
-# ===== ===== ===== ===== ===== ===== ===== =====
 
 
 # ===== ===== ===== ===== ===== ===== ===== =====
@@ -139,6 +135,24 @@ function trimString() {
     sed 's,^[[:blank:]]*,,' <<< "${string}" | sed 's,[[:blank:]]*$,,'
 } 
 
+
+function printConsole {
+	if [ "$USE_COLOR" -eq 1 ]; then
+		echo -e '\e[1;32m' "[ SPM ]" '\e[0m' "$1"
+	else 
+		echo "[ SPM ] $1"
+	fi;
+}
+
+
+function printError {
+	if [ "$USE_COLOR" -eq 1 ]; then
+		echo -e '\e[1;31m' "[ SPM ]" '\e[0m' "$1"
+	else 
+		echo "[ SPM ] $1"
+	fi;
+}
+
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== [E] Define UI Utility functions ===== 
@@ -148,7 +162,7 @@ function trimString() {
 
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [S]  Define UX Functions =====
+# ===== [S]  Define Internal Functions =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 
@@ -162,7 +176,7 @@ function resetDataFile {
 function storeProcess {
 
 	if [ ! -d "$DATA_PATH" ]; then
-		echo "Data directory for profile $1 does not found. Make one $DATA_PATH";
+		printConsole "Data directory for profile $1 does not found. Make one $DATA_PATH";
 		mkdir -p "$DATA_PATH";
 	fi;
 
@@ -192,46 +206,46 @@ function readPidFromData {
 }
 
 function start {
-	echo "Start bootWar and retore data and logs with profile [ $1 ]"
+	printConsole "Start bootWar and retore data and logs with profile [ $1 ]"
 	if [ ! -n "$1" ]; then
-		echo "Need a profile to execute";
+		printError "Need a profile to execute";
 		exit 1;
 	else
 		if [ ! -n "$2" ]; then
-			echo "Executable war file must provided";
+			printError "Executable war file must provided";
 			exit 1;
 		fi;
 
 		if [ ! -f "$2" ]; then
-			echo "$2 is not a executable war file";
+			printError "$2 is not a executable war file";
 			exit 1;
 		fi;
 
 		# Validation for duplicated profile
 		local reqProfile=$( readPidFromData "$1" )
 		if [ -n "$reqProfile" ]; then
-			echo "bootProcess [ $1 ] is already running ... $reqProfile";
+			printConsole "bootProcess [ $1 ] is already running ... $reqProfile";
 			exit 1;
 		else 
-			echo "start new process with $reqProfile $1"
+			printConsole "Start new process with $reqProfile $1"
 		fi;
 
-		echo "Start [ $1 ] with file [ $2 ]";
+		printConsole "Start [ $1 ] with file [ $2 ]";
 		# Check log location 
 		if [ ! -d "$LOG_PATH/$1" ]; then
-			echo "Log directory for profile $1 does not found. Make one $LOG_PATH/$1";
+			printConsole "Log directory for profile $1 does not found. Make one $LOG_PATH/$1";
 			mkdir -p "$LOG_PATH/$1"
 		fi; 
 		# echo "Execution command is [ java -Dspring.profiles.active=$1 -jar $2 > $LOG_PATH/$1/out.log & ]";
 		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
 		processId=$( grepPid "$1" );
-		echo "Spring process run with pid [ $processId ]";
+		printConsole "Spring process run with pid [ $processId ]";
 		storeProcess "$1" "$processId"
 	fi;
 }
 
 function stop {
-	echo "Stop spring boot process with profile [ $1 ]"
+	printConsole "Stop spring boot process with profile [ $1 ]"
 	local processToKill=$( readPidFromData "$1" );
 	kill "$processToKill"
 	# After delete, remove the corresponding line from data file
@@ -246,13 +260,13 @@ function stop {
 		resetDataFile
 		cat "$DATA_PATH/temp.temp" >> "$DATA_PATH/temp.data";
 	else 
-		echo "Failed to stop boot process with profile $1";
+		printError "Failed to stop boot process with profile $1";
 		exit 1;
 	fi;
 }	
 
 function list {
-	echo "List up managed spring boot processes from data folder [ $DATA_PATH ]"
+	printConsole "List up managed spring boot processes from data folder [ $DATA_PATH ]"
 	if [ ! -f "$DATA_PATH/temp.data" ]; then
 		touch "$DATA_PATH/temp.data";
 		resetDataFile
@@ -269,9 +283,43 @@ function resetData {
 	resetDataFile
 }
 
+
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
-# ===== [E]  Define UX Functions =====
+# ===== [E]  Define Internal Functions =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+
+
+
+
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== [S] Checking required paths
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+
+if [ -d "$CONFIG_PATH" ]; then
+	printConsole "Required config directory : [ $CONFIG_PATH ] exists. Good to go ...";
+else
+	mkdir -p "$CONFIG_PATH";
+fi;
+
+if [ -d "$DATA_PATH" ]; then
+	printConsole "Required data directory : [ $DATA_PATH ] exists. Good to go ...";
+else
+	mkdir -p "$DATA_PATH";
+fi;
+
+if [ -d "$LOG_PATH" ]; then
+	printConsole "Required logs directory : [ $LOG_PATH ] exists. Good to go ...";
+else
+	mkdir -p "$LOG_PATH";
+fi;
+
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== ===== ===== ===== ===== ===== ===== =====
+# ===== [E] Checking required paths
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 
