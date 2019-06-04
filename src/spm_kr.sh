@@ -330,7 +330,7 @@ if [ "$#" -lt 1 ]; then
 	echo "명령어 목록";
 	echo "  start	[profile] : 전달된 프로파일로 웹서비스를 기동합니다.";
 	echo "  stop [profile] : 전달된 프로파일로 기동 중인 웹서비스를 중지합니다.";
-	echo "  restart [profile] : 전달된 프로파일로 기동 중이 웹서비스를 재시작합니다.(작업중)";
+	echo "  restart [profile] : 전달된 프로파일로 기동 중인 웹서비스를 재시작합니다.(작업중)";
 	echo "  logs [profile] : 전달된 프로파일에 해당하는 웹서비스의 로그를 출력합니다.";
 	echo "  list : 관리하고 있는 프로세스 목록을 출력합니다.";
 	exit 0;
