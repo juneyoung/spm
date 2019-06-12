@@ -166,6 +166,13 @@ function printError {
 # ===== ===== ===== ===== ===== ===== ===== =====
 # ===== ===== ===== ===== ===== ===== ===== =====
 
+# @Params pid
+function healthcheck {
+	# find by pid 
+	# ps -ef | awk '{print $2}' | grep $pid ? 58 로 하면 588 5881 다 걸림
+}
+
+
 function resetDataFile {
 	##### Do not additional echo in this function 
 	echo "profile=pid=start_date" > "$DATA_PATH/temp.data";
@@ -237,7 +244,9 @@ function start {
 			mkdir -p "$LOG_PATH/$1"
 		fi; 
 		# echo "Execution command is [ java -Dspring.profiles.active=$1 -jar $2 > $LOG_PATH/$1/out.log & ]";
-		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
+		# nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
+		# Scouter support : nohup java -javaagent:"$SCOUT_AGENT_JAR" -Dobj_name="$1"  -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" 2>&1 > &
+		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" 2>&1 > &
 		processId=$( grepPid "$1" );
 		printConsole "Spring process run with pid [ $processId ]";
 		storeProcess "$1" "$processId"
