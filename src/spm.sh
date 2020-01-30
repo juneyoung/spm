@@ -167,10 +167,10 @@ function printError {
 # ===== ===== ===== ===== ===== ===== ===== =====
 
 # @Params pid
-function healthcheck {
+# function healthcheck {
 	# find by pid 
 	# ps -ef | awk '{print $2}' | grep $pid ? 58 로 하면 588 5881 다 걸림
-}
+# }
 
 
 function resetDataFile {
