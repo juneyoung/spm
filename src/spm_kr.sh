@@ -239,7 +239,7 @@ function start {
 		# echo "Execution command is [ java -Dspring.profiles.active=$1 -jar $2 > $LOG_PATH/$1/out.log & ]";
 		# nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" &
 		# Scouter support : nohup java -javaagent:"$SCOUT_AGENT_JAR" -Dobj_name="$1"  -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" 2>&1 > &
-		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" 2>&1 > &
+		nohup java -Dspring.profiles.active="$1" -jar "$2" > "$LOG_PATH/$1/out.log" 2>&1 &
 		processId=$( grepPid "$1" );
 		printConsole "부트 프로세스가 성공적으로 기동되었습니다. 프로세스 아이디는 [ $processId ] 입니다.";
 		storeProcess "$1" "$processId"
